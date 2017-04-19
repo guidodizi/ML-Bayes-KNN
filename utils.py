@@ -71,4 +71,12 @@ class Line:
 		self.euribor3m = euribor3m
 		self.nr_employed = nr_employed
 		self.y = y
-	
+
+class Struct:
+	def __init__(self, numYes, numNo, p_yes, p_no):
+		self.numYes = numYes
+		self.numNo = numNo
+		self.p_yes = p_yes
+		self.p_no = p_no
+
+		
