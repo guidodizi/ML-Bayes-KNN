@@ -160,6 +160,11 @@ class Struct:
 		for value in VALUES_NR_EMPLOYED:
 			self.dict_nr_employed.setdefault(value, [0,0])
 
+		self.listDict = [self.dict_age, self.dict_job, self.dict_marital, self.dict_education, self.dict_default, 
+		self.dict_housing, self.dict_loan, self.dict_contact, self.dict_month, self.dict_day_of_week, self.dict_duration,
+		self.dict_campaign, self.dict_pdays, self.dict_previous, self.dict_poutcome, self.dict_emp_var_rate, 
+		self.dict_cons_price_idx, self.dict_cons_conf_idx, self.dict_euribor3m, self.dict_nr_employed]
+
 	def processData(self):
 		for item in self.train_data:
 			if item.y == "yes":
@@ -210,5 +215,69 @@ class Struct:
 				self.dict_nr_employed[item.nr_employed][1] += 1
 
 				self.numNo += 1
-		self.p_Yes = (self.numYes / (self.numYes + self.numNo)) * 100
-		self.p_No = (self.numNo / (self.numYes + self.numNo)) * 100
+		self.p_Yes = (self.numYes / (self.numYes + self.numNo))
+		self.p_No = (self.numNo / (self.numYes + self.numNo))
+		self.makePercentils()
+
+	def makePercentils(self):
+		for dictonary in self.listDict:
+			for key, value in dictonary.iteritems():
+				value[0] = (value[0] / self.numYes)
+				value[1] = (value[1] / self.numNo) 
+
+	def evalData(self, test_data):
+		for item in test_data:
+			#percentage for yes
+			pYes = 1
+			pYes = pYes * self.dict_age[item.age][0]
+			pYes = pYes * self.dict_job[item.job][0]
+			pYes = pYes * self.dict_marital[item.marital][0]
+			pYes = pYes * self.dict_education[item.education][0]
+			pYes = pYes * self.dict_default[item.default][0]
+			pYes = pYes * self.dict_housing[item.housing][0]
+			pYes = pYes * self.dict_loan[item.loan][0]
+			pYes = pYes * self.dict_contact[item.contact][0]
+			pYes = pYes * self.dict_month[item.month][0]
+			pYes = pYes * self.dict_day_of_week[item.day_of_week][0]
+			pYes = pYes * self.dict_duration[item.duration][0]
+			pYes = pYes * self.dict_campaign[item.campaign][0]
+			pYes = pYes * self.dict_pdays[item.pdays][0]
+			pYes = pYes * self.dict_previous[item.previous][0]
+			pYes = pYes * self.dict_poutcome[item.poutcome][0]
+			pYes = pYes * self.dict_emp_var_rate[item.emp_var_rate][0]
+			pYes = pYes * self.dict_cons_price_idx[item.cons_price_idx][0]
+			pYes = pYes * self.dict_cons_conf_idx[item.cons_conf_idx][0]
+			pYes = pYes * self.dict_euribor3m[item.euribor3m][0]
+			pYes = pYes * self.dict_nr_employed[item.nr_employed][0]
+			
+			pYes = pYes * self.p_Yes
+
+			#percentage for no
+			pNo = 1
+			pNo = pNo * self.dict_age[item.age][0]
+			pNo = pNo * self.dict_job[item.job][0]
+			pNo = pNo * self.dict_marital[item.marital][0]
+			pNo = pNo * self.dict_education[item.education][0]
+			pNo = pNo * self.dict_default[item.default][0]
+			pNo = pNo * self.dict_housing[item.housing][0]
+			pNo = pNo * self.dict_loan[item.loan][0]
+			pNo = pNo * self.dict_contact[item.contact][0]
+			pNo = pNo * self.dict_month[item.month][0]
+			pNo = pNo * self.dict_day_of_week[item.day_of_week][0]
+			pNo = pNo * self.dict_duration[item.duration][0]
+			pNo = pNo * self.dict_campaign[item.campaign][0]
+			pNo = pNo * self.dict_pdays[item.pdays][0]
+			pNo = pNo * self.dict_previous[item.previous][0]
+			pNo = pNo * self.dict_poutcome[item.poutcome][0]
+			pNo = pNo * self.dict_emp_var_rate[item.emp_var_rate][0]
+			pNo = pNo * self.dict_cons_price_idx[item.cons_price_idx][0]
+			pNo = pNo * self.dict_cons_conf_idx[item.cons_conf_idx][0]
+			pNo = pNo * self.dict_euribor3m[item.euribor3m][0]
+			pNo = pNo * self.dict_nr_employed[item.nr_employed][0]
+
+			pNo = pNo * self.p_No
+			
+			if (pYes > pNo):
+				Line.prob = property(lambda self: "yes")
+			else:
+				Line.prob = property(lambda self: "no")				
