@@ -74,7 +74,7 @@ class Line:
 		self.nr_employed = nr_employed
 		self.y = y
 
-class Struct:
+class BayesianStruct:
 	def __init__(self, train_data):
 		self.train_data = train_data
 		self.numYes = 0

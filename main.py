@@ -16,11 +16,11 @@ test_data = data[:index]
 train_data = data[index:] 
 
 #class with all data for bayesian learning
-struct = Struct(train_data)
+bayesian = BayesianStruct(train_data)
 
-struct.processData()
+bayesian.processData()
 
-struct.evalData(test_data)
+bayesian.evalData(test_data)
 
 correctPredictions = 0
 for item in train_data:
