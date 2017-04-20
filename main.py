@@ -19,3 +19,7 @@ train_data = data[index:]
 struct = Struct(train_data)
 struct.processData()
 
+print struct.numYes
+print struct.numNo
+print struct.p_Yes
+print struct.p_No

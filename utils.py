@@ -1,3 +1,5 @@
+from __future__ import division
+
 # age (numeric)
 # job : type of job (categorical: 'admin.','blue-collar','entrepreneur','housemaid','management','retired','self-employed','services','student','technician','unemployed','unknown')
 # marital : marital status (categorical: 'divorced','married','single','unknown'; note: 'divorced' means divorced or widowed)
@@ -208,5 +210,5 @@ class Struct:
 				self.dict_nr_employed[item.nr_employed][1] += 1
 
 				self.numNo += 1
-		self.p_Yes = float(self.numYes / (self.numYes + self.numNo))
-		self.p_No = float(self.numNo / (self.numYes + self.numNo))
+		self.p_Yes = (self.numYes / (self.numYes + self.numNo)) * 100
+		self.p_No = (self.numNo / (self.numYes + self.numNo)) * 100
