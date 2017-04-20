@@ -49,6 +49,123 @@ VALUES_CONS_CONF_IDX = ["low", "mid-low", "mid-high","high"]
 VALUES_EURIBOR3M = ["low", "mid-low", "mid-high","high"]
 VALUES_NR_EMPLOYED = ["low", "mid-low", "mid-high","high"]
 
+class KNN:
+	def __init__(self,K,train_data):
+		self.K = K
+		self.train_data = train_data
+
+	def distanceInstances(self, data1, data2):
+		distance = 0
+		#AGE (gradient)
+		i_elem1 = VALUES_AGE.index(data1.age)
+		i_elem2 = VALUES_AGE.index(data2.age)
+		distance += abs(i_elem1 - i_elem2)
+		#JOB (on/off)
+		if data1.job != data2.job:
+			distance += 1
+		#MARITAL (on/off)
+		if data1.marital != data2.marital:
+			distance += 1
+		#EDUCATION (gradient + unknown)
+		if data1.education == "unknown" or data2.education == "unknown":
+			distance += int(len(VALUES_EDUCATION) / 2)
+		else:
+			i_elem1 = VALUES_EDUCATION.index(data1.education)
+			i_elem2 = VALUES_EDUCATION.index(data2.education)
+			distance += abs(i_elem1 - i_elem2)
+		#DEFAULT (on/off)
+		if data1.default != data2.default:
+			distance += 1
+		#HOUSING (on/off)
+		if data1.housing != data2.housing:
+			distance += 1
+		#LOAN (on/off)
+		if data1.loan != data2.loan:
+			distance += 1
+		#CONTACT (on/off)
+		if data1.contact != data2.contact:
+			distance += 1
+		#MONTH (gradient)
+		i_elem1 = VALUES_MONTH.index(data1.month)
+		i_elem2 = VALUES_MONTH.index(data2.month)
+		distance += abs(i_elem1 - i_elem2)
+		#DAY_OF_WEEK (gradient)
+		i_elem1 = VALUES_DAY_OF_WEEK.index(data1.day_of_week)
+		i_elem2 = VALUES_DAY_OF_WEEK.index(data2.day_of_week)
+		distance += abs(i_elem1 - i_elem2)
+		#DURATION (gradient)
+		i_elem1 = VALUES_DURATION.index(data1.duration)
+		i_elem2 = VALUES_DURATION.index(data2.duration)
+		distance += abs(i_elem1 - i_elem2)
+		#CAMPAIGN (gradient)
+		i_elem1 = VALUES_CAMPAIGN.index(data1.campaign)
+		i_elem2 = VALUES_CAMPAIGN.index(data2.campaign)
+		distance += abs(i_elem1 - i_elem2)
+		#PDAYS (gradient)
+		i_elem1 = VALUES_PDAYS.index(data1.pdays)
+		i_elem2 = VALUES_PDAYS.index(data2.pdays)
+		distance += abs(i_elem1 - i_elem2)
+		#PREVIOUS (gradient)
+		i_elem1 = VALUES_PREVIOUS.index(data1.previous)
+		i_elem2 = VALUES_PREVIOUS.index(data2.previous)
+		distance += abs(i_elem1 - i_elem2)
+		#POUTCOME (gradient)
+		i_elem1 = VALUES_POUTCOME.index(data1.poutcome)
+		i_elem2 = VALUES_POUTCOME.index(data2.poutcome)
+		distance += abs(i_elem1 - i_elem2)
+		#EMP_VAR_RATE (gradient)
+		i_elem1 = VALUES_EMP_VAR_RATE.index(data1.emp_var_rate)
+		i_elem2 = VALUES_EMP_VAR_RATE.index(data2.emp_var_rate)
+		distance += abs(i_elem1 - i_elem2)
+		#CONS_PRICE_IDX (gradient)
+		i_elem1 = VALUES_CONS_PRICE_IDX.index(data1.cons_price_idx)
+		i_elem2 = VALUES_CONS_PRICE_IDX.index(data2.cons_price_idx)
+		distance += abs(i_elem1 - i_elem2)
+		#CONS_CONF_IDX (gradient)
+		i_elem1 = VALUES_CONS_CONF_IDX.index(data1.cons_conf_idx)
+		i_elem2 = VALUES_CONS_CONF_IDX.index(data2.cons_conf_idx)
+		distance += abs(i_elem1 - i_elem2)
+		#EURIBOR3M (gradient)
+		i_elem1 = VALUES_EURIBOR3M.index(data1.euribor3m)
+		i_elem2 = VALUES_EURIBOR3M.index(data2.euribor3m)
+		distance += abs(i_elem1 - i_elem2)
+		#NR_EMPLOYED (gradient)
+		i_elem1 = VALUES_NR_EMPLOYED.index(data1.nr_employed)
+		i_elem2 = VALUES_NR_EMPLOYED.index(data2.nr_employed)
+		distance += abs(i_elem1 - i_elem2)
+
+		return distance
+
+	def findKNeighbours(self, item):
+		neighbours={}
+		distances = []
+		for trainItem in self.train_data:
+			distance = self.distanceInstances(item, trainItem)
+			distances.append((distance,trainItem))
+		
+		i=0
+		while i < self.K:
+			n = min(distances, key = lambda t: t[0])
+			distances.remove(n)
+			neighbours.setdefault(str(i+1) + " Neighbour", n)
+			i += 1
+		return neighbours
+	
+	def evalData(self,test_data):
+		for item in test_data:
+			neigbours = self.findKNeighbours(item)
+			vote = 0
+			for key, value in neigbours.iteritems():
+				line_voter = value[1]
+				if line_voter.y == "yes":
+					vote += 1
+				elif line_voter.y == "no":					
+					vote -= 1
+			if vote >= 0:
+				Line.prob = property(lambda self: "yes")
+			else:
+				Line.prob = property(lambda self: "no")
+				
 class Line:
 	def __init__(self,age,job,marital,education,default,housing,loan,contact,month,day_of_week,duration,
 	campaign,pdays,previous,poutcome,emp_var_rate,cons_price_idx,cons_conf_idx,euribor3m,nr_employed,y):
@@ -281,3 +398,15 @@ class BayesianStruct:
 				Line.prob = property(lambda self: "yes")
 			else:
 				Line.prob = property(lambda self: "no")				
+	
+# data1 = Line(VALUES_AGE[0],VALUES_JOB[0],VALUES_MARITAL[0],VALUES_EDUCATION[7],VALUES_DEFAULT[0],VALUES_HOUSING[0],
+# VALUES_LOAN[0],VALUES_CONTACT[0],VALUES_MONTH[0],VALUES_DAY_OF_WEEK[0],VALUES_DURATION[0],VALUES_CAMPAIGN[0],
+# VALUES_PDAYS[0],VALUES_PREVIOUS[0],VALUES_POUTCOME[0],VALUES_EMP_VAR_RATE[0],VALUES_CONS_PRICE_IDX[0],
+# VALUES_CONS_CONF_IDX[0],VALUES_EURIBOR3M[0],VALUES_NR_EMPLOYED[0], "yes")
+
+# data2 = Line(VALUES_AGE[0],VALUES_JOB[0],VALUES_MARITAL[0],VALUES_EDUCATION[0],VALUES_DEFAULT[0],VALUES_HOUSING[0],
+# VALUES_LOAN[0],VALUES_CONTACT[0],VALUES_MONTH[0],VALUES_DAY_OF_WEEK[0],VALUES_DURATION[0],VALUES_CAMPAIGN[0],
+# VALUES_PDAYS[0],VALUES_PREVIOUS[0],VALUES_POUTCOME[0],VALUES_EMP_VAR_RATE[0],VALUES_CONS_PRICE_IDX[0],
+# VALUES_CONS_CONF_IDX[0],VALUES_EURIBOR3M[0],VALUES_NR_EMPLOYED[0], "yes")
+# print "ACA"
+# print distanceInstances(data1,data2)

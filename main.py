@@ -8,7 +8,7 @@ intervals, attributes = createIntervalsAttributes()
 data = getData(intervals,attributes)
 #hago un shuffle del corpus
 shuffle(data)
-#divido el coprus en 4/5 y 1/5
+#divido el corpus en 4/5 y 1/5
 index = int( len(data) / 5 ) 
 #1/5
 test_data = data[:index]
@@ -26,8 +26,21 @@ correctPredictions = 0
 for item in train_data:
 	if item.prob == item.y:
 		correctPredictions += 1
-print "RESULTS:"
+print "RESULTS BAYESIAN LEARNING:"
 print "Total cases: " + str(len(train_data))
 print "Correct Predictions: " + str(correctPredictions)
 print "Correctness percentage: " + str((correctPredictions / len(train_data)) * 100) + "%"
 
+
+
+knn = KNN(3, train_data)
+knn.evalData(test_data)
+
+correctPredictions = 0
+for item in train_data:
+	if item.prob == item.y:
+		correctPredictions += 1
+print "RESULTS KNN - 3:"
+print "Total cases: " + str(len(train_data))
+print "Correct Predictions: " + str(correctPredictions)
+print "Correctness percentage: " + str((correctPredictions / len(train_data)) * 100) + "%"
