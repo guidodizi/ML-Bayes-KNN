@@ -162,9 +162,9 @@ class KNN:
 				elif line_voter.y == "no":					
 					vote -= 1
 			if vote >= 0:
-				Line.prob = property(lambda self: "yes")
+				item.probKNN = "yes"
 			else:
-				Line.prob = property(lambda self: "no")
+				item.probKNN = "no"
 				
 class Line:
 	def __init__(self,age,job,marital,education,default,housing,loan,contact,month,day_of_week,duration,
@@ -190,6 +190,8 @@ class Line:
 		self.euribor3m = euribor3m
 		self.nr_employed = nr_employed
 		self.y = y
+		self.probBayesian = ""
+		self.probKNN = ""
 
 class BayesianStruct:
 	def __init__(self, train_data):
@@ -393,11 +395,10 @@ class BayesianStruct:
 			pNo = pNo * self.dict_nr_employed[item.nr_employed][0]
 
 			pNo = pNo * self.p_No
-			
 			if (pYes > pNo):
-				Line.prob = property(lambda self: "yes")
+				item.probBayesian ="yes"
 			else:
-				Line.prob = property(lambda self: "no")				
+				item.probBayesian = "no"
 	
 # data1 = Line(VALUES_AGE[0],VALUES_JOB[0],VALUES_MARITAL[0],VALUES_EDUCATION[7],VALUES_DEFAULT[0],VALUES_HOUSING[0],
 # VALUES_LOAN[0],VALUES_CONTACT[0],VALUES_MONTH[0],VALUES_DAY_OF_WEEK[0],VALUES_DURATION[0],VALUES_CAMPAIGN[0],

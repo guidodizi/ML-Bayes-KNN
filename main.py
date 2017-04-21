@@ -15,32 +15,40 @@ test_data = data[:index]
 #4/5
 train_data = data[index:] 
 
+index_testing = 10
+testing_data = test_data[:index_testing]
+print len(testing_data)
 #class with all data for bayesian learning
 bayesian = BayesianStruct(train_data)
 
 bayesian.processData()
 
-bayesian.evalData(test_data)
 
-correctPredictions = 0
-for item in train_data:
-	if item.prob == item.y:
-		correctPredictions += 1
+bayesian.evalData(testing_data)
+
+correctPredictionsBayesian = 0
+for item in testing_data:
+	print "GUESS: " + item.probBayesian
+	print "TRUTH: " + item.y
+	if item.probBayesian == item.y:
+		correctPredictionsBayesian += 1
 print "RESULTS BAYESIAN LEARNING:"
-print "Total cases: " + str(len(train_data))
-print "Correct Predictions: " + str(correctPredictions)
-print "Correctness percentage: " + str((correctPredictions / len(train_data)) * 100) + "%"
+print "Total cases: " + str(len(testing_data))
+print "Correct Predictions: " + str(correctPredictionsBayesian)
+print "Correctness percentage: " + str((correctPredictionsBayesian / len(testing_data)) * 100) + "%"
 
 
 
 knn = KNN(3, train_data)
-knn.evalData(test_data)
+knn.evalData(testing_data)
 
-correctPredictions = 0
-for item in train_data:
-	if item.prob == item.y:
-		correctPredictions += 1
+correctPredictionsKNN = 0
+for item in testing_data:
+	print "GUESS: " + item.probBayesian
+	print "TRUTH: " + item.y
+	if item.probKNN == item.y:
+		correctPredictionsKNN += 1
 print "RESULTS KNN - 3:"
-print "Total cases: " + str(len(train_data))
-print "Correct Predictions: " + str(correctPredictions)
-print "Correctness percentage: " + str((correctPredictions / len(train_data)) * 100) + "%"
+print "Total cases: " + str(len(testing_data))
+print "Correct Predictions: " + str(correctPredictionsKNN)
+print "Correctness percentage: " + str((correctPredictionsKNN / len(testing_data)) * 100) + "%"
