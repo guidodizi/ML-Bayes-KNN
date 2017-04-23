@@ -137,7 +137,9 @@ class KNN:
 		return distance
 
 	def findKNeighbours(self, item):
-		neighbours={}
+		neighbours1={}
+		neighbours3={}
+		neighbours5={}
 		distances = []
 		for trainItem in self.train_data:
 			distance = self.distanceInstances(item, trainItem)
@@ -147,24 +149,61 @@ class KNN:
 		while i < self.K:
 			n = min(distances, key = lambda t: t[0])
 			distances.remove(n)
-			neighbours.setdefault(str(i+1) + " Neighbour", n)
+			if i == 0:
+				neighbours1.setdefault(str(i+1) + " Neighbour", n)
+				neighbours3.setdefault(str(i+1) + " Neighbour", n)
+				neighbours5.setdefault(str(i+1) + " Neighbour", n)
+			elif 1 <= i < 3: 
+				neighbours3.setdefault(str(i+1) + " Neighbour", n)
+				neighbours5.setdefault(str(i+1) + " Neighbour", n)
+			else: 
+				neighbours5.setdefault(str(i+1) + " Neighbour", n)
 			i += 1
-		return neighbours
+
+		return neighbours1,neighbours3,neighbours5
 	
 	def evalData(self,test_data):
 		for item in test_data:
-			neigbours = self.findKNeighbours(item)
-			vote = 0
-			for key, value in neigbours.iteritems():
+			neighbours1,neighbours3,neighbours5  = self.findKNeighbours(item)
+			vote1 = 0
+			vote3 = 0
+			vote5 = 0
+			
+			for key, value in neighbours1.iteritems():
 				line_voter = value[1]
 				if line_voter.y == "yes":
-					vote += 1
-				elif line_voter.y == "no":					
-					vote -= 1
-			if vote >= 0:
-				item.probKNN = "yes"
+					vote1 += 1
+				elif line_voter.y == "no":				
+					vote1 -= 1
+
+			for key, value in neighbours3.iteritems():
+				line_voter = value[1]
+				if line_voter.y == "yes":
+					vote3 += 1
+				elif line_voter.y == "no":				
+					vote3 -= 1
+
+			for key, value in neighbours5.iteritems():
+				line_voter = value[1]
+				if line_voter.y == "yes":
+					vote5 += 1
+				elif line_voter.y == "no":				
+					vote5 -= 1
+				
+			if vote1 >= 0:
+				item.probKNN1 = "yes"
 			else:
-				item.probKNN = "no"
+				item.probKNN1 = "no"
+
+			if vote3 >= 0:
+				item.probKNN3 = "yes"
+			else:
+				item.probKNN3 = "no"
+
+			if vote1 >= 0:
+				item.probKNN5 = "yes"
+			else:
+				item.probKNN5 = "no"
 				
 class Line:
 	def __init__(self,age,job,marital,education,default,housing,loan,contact,month,day_of_week,duration,
@@ -191,7 +230,9 @@ class Line:
 		self.nr_employed = nr_employed
 		self.y = y
 		self.probBayesian = ""
-		self.probKNN = ""
+		self.probKNN1 = ""
+		self.probKNN3 = ""
+		self.probKNN5 = ""
 
 class BayesianStruct:
 	def __init__(self, train_data):
