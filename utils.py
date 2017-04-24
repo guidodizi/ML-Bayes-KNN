@@ -200,7 +200,7 @@ class KNN:
 			else:
 				item.probKNN3 = "no"
 
-			if vote1 >= 0:
+			if vote5 >= 0:
 				item.probKNN5 = "yes"
 			else:
 				item.probKNN5 = "no"
